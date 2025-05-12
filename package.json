@@ -1,0 +1,58 @@
+{
+  "name": "starter-ts",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "ts starter template",
+  "author": "Peng Zhao jun <pzj01.me@gmail.com>",
+  "license": "MIT",
+  "funding": "https://github.com/pzj01/starter-ts",
+  "homepage": "https://github.com/pzj01/starter-ts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pzj01/starter-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pzj01/starter-ts/issues"
+  },
+  "keywords": [
+    "starter",
+    "template",
+    "ts",
+    "typescript"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest",
+    "release": "bumpp && pnpm publish --access public",
+    "prepare": "simple-git-hooks",
+    "prepublishOnly": "pnpm build"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.13.0",
+    "@types/node": "^22.15.17",
+    "bumpp": "^10.1.0",
+    "eslint": "^9.26.0",
+    "lint-staged": "^16.0.0",
+    "simple-git-hooks": "^2.13.0",
+    "tsup": "^8.4.0",
+    "vitest": "^3.1.3"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm test && pnpm exec lint-staged"
+  },
+  "lint-staged": {
+    "*": "pnpm lint:fix"
+  }
+}
