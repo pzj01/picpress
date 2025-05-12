@@ -1,24 +1,23 @@
 {
-  "name": "starter-ts",
+  "name": "picpress",
   "type": "module",
   "version": "0.1.0",
-  "description": "ts starter template",
+  "description": "A image format conversion and compression tool",
   "author": "Peng Zhao jun <pzj01.me@gmail.com>",
   "license": "MIT",
-  "funding": "https://github.com/pzj01/starter-ts",
-  "homepage": "https://github.com/pzj01/starter-ts#readme",
+  "funding": "https://github.com/pzj01/picpress",
+  "homepage": "https://github.com/pzj01/picpress#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pzj01/starter-ts.git"
+    "url": "git+https://github.com/pzj01/picpress.git"
   },
   "bugs": {
-    "url": "https://github.com/pzj01/starter-ts/issues"
+    "url": "https://github.com/pzj01/picpress/issues"
   },
   "keywords": [
-    "starter",
-    "template",
-    "ts",
-    "typescript"
+    "image",
+    "format conversion",
+    "compress"
   ],
   "exports": {
     ".": "./dist/index.js"
