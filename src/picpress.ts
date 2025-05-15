@@ -85,10 +85,12 @@ export class PicPress {
       ...this.options,
       ...(args.length === 1 ? args[0] : args[1]),
     } as Required<PicpressOptions>
+
+    let count = 1
     const path: string = args.length === 1 ? args[0] : ''
     const paths = path ? [path] : this.paths
 
-    const promises = paths.map((path, i) => {
+    const promises = paths.map((path) => {
       if (this.isSupported(path)) {
         let dir = output
         let fname = basename(path)
@@ -98,7 +100,7 @@ export class PicPress {
           dir = dirname(path)
         }
         else {
-          fname = `${filename(basename(fname, ext), i)}${ext}`
+          fname = `${filename(basename(fname, ext), count)}${ext}`
         }
 
         const newPath = join(dir, fname)
@@ -110,14 +112,14 @@ export class PicPress {
         if (preserveMetadata) {
           s.withMetadata()
         }
-
+        count++
         return this.toFile(s, newPath)
       }
     })
 
     const results = await Promise.all(promises)
 
-    console.log(`✅ All images processed ${greenBright('successfully')}. ${results.length} images processed.`)
+    console.log(`✅ All images processed ${greenBright('successfully')}. ${count} images processed.`)
 
     return results.filter(Boolean) as OutputInfo[]
   }
@@ -134,9 +136,10 @@ export class PicPress {
       ...(args.length === 1 ? args[0] : args[1]),
     } as Required<PicpressOptions>
 
+    let count = 1
     const path: string = args.length === 1 ? args[0] : ''
     const paths = path ? [path] : this.paths
-    const promises = paths.map((path, i) => {
+    const promises = paths.map((path) => {
       if (this.isSupported(path)) {
         let dir = output
         let fname = basename(path)
@@ -150,20 +153,20 @@ export class PicPress {
           dir = dirname(path)
         }
         else {
-          fname = `${filename(basename(fname, originalExt), i)}.${format}`
+          fname = `${filename(basename(fname, originalExt), count)}.${format}`
         }
         const newPath = join(dir, fname)
         this.log(path, newPath)
         const s = sharp(path)
         s.toFormat(format)
-
+        count++
         return this.toFile(s, newPath)
       }
     })
 
     const results = await Promise.all(promises)
 
-    console.log(`✅ All images processed ${greenBright('successfully')}. ${results.length} images processed.`)
+    console.log(`✅ All images processed ${greenBright('successfully')}. ${count} images processed.`)
 
     return results.filter(Boolean) as OutputInfo[]
   }

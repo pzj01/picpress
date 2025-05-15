@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import process from 'node:process'
 import { blueBright, cyanBright, greenBright, redBright } from 'ansis'
 import cac from 'cac'
+import { createJiti } from 'jiti'
 import { name, version } from '../package.json'
 import { defaultSourceFormats, PicPress } from './picpress'
 
@@ -79,9 +80,17 @@ cli.parse()
 async function readConfigFile(): Promise<PicpressOptions | undefined> {
   for (const configFile of configFiles) {
     const path = join(process.cwd(), configFile)
-    if (existsSync(configFile)) {
+    if (existsSync(path)) {
       if (configFile.endsWith('.json'))
         return JSON.parse(readFileSync(path, 'utf-8'))
+
+      if (configFile.endsWith('.ts')) {
+        const jiti = createJiti(import.meta.url, {
+          fsCache: true,
+          moduleCache: true,
+        })
+        return await jiti.import(path)
+      }
 
       return (await import(path)).default
     }
