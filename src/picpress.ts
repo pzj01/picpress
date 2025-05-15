@@ -84,11 +84,11 @@ export class PicPress {
     } = {
       ...this.options,
       ...(args.length === 1 ? args[0] : args[1]),
-    }
+    } as Required<PicpressOptions>
     const path: string = args.length === 1 ? args[0] : ''
     const paths = path ? [path] : this.paths
 
-    const promises = paths.map((path) => {
+    const promises = paths.map((path, i) => {
       if (this.isSupported(path)) {
         let dir = output
         let fname = basename(path)
@@ -98,7 +98,7 @@ export class PicPress {
           dir = dirname(path)
         }
         else {
-          fname = `${filename(basename(fname, ext))}${ext}`
+          fname = `${filename(basename(fname, ext), i)}${ext}`
         }
 
         const newPath = join(dir, fname)
@@ -132,11 +132,11 @@ export class PicPress {
     } = {
       ...this.options,
       ...(args.length === 1 ? args[0] : args[1]),
-    }
+    } as Required<PicpressOptions>
 
     const path: string = args.length === 1 ? args[0] : ''
     const paths = path ? [path] : this.paths
-    const promises = paths.map((path) => {
+    const promises = paths.map((path, i) => {
       if (this.isSupported(path)) {
         let dir = output
         let fname = basename(path)
@@ -150,7 +150,7 @@ export class PicPress {
           dir = dirname(path)
         }
         else {
-          fname = `${filename(basename(fname, originalExt))}.${format}`
+          fname = `${filename(basename(fname, originalExt), i)}.${format}`
         }
         const newPath = join(dir, fname)
         this.log(path, newPath)

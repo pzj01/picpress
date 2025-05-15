@@ -30,7 +30,7 @@ export interface CommonOptions {
    * @param filename 源文件名（含路径，例：'image'）
    * @returns 新文件名（例：'new-image'）
    */
-  filename?: (filename: string) => string
+  filename?: (filename: string, i: number) => string
 
   /**
    * 需要处理的图片格式，支持单个格式或格式数组
