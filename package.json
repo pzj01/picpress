@@ -1,7 +1,7 @@
 {
   "name": "picpress",
   "type": "module",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "A image format conversion and compression tool",
   "author": "Peng Zhao jun <pzj01.me@gmail.com>",
   "license": "MIT",

@@ -1,8 +1,19 @@
-import type { FormatEnum } from 'sharp'
+import type { AvifOptions, FormatEnum, GifOptions, HeifOptions, Jp2Options, JpegOptions, JxlOptions, OutputOptions, PngOptions, TiffOptions, WebpOptions } from 'sharp'
 
 export type ImageFormat = keyof FormatEnum
 
-export interface PicpressOptions {
+type SharpCompressOptions = OutputOptions
+  | JpegOptions
+  | PngOptions
+  | WebpOptions
+  | AvifOptions
+  | HeifOptions
+  | JxlOptions
+  | GifOptions
+  | Jp2Options
+  | TiffOptions
+
+export interface CommonOptions {
   /**
    * 入口文件或文件夹路径，支持单个路径或路径数组
    */
@@ -12,13 +23,7 @@ export interface PicpressOptions {
    * 输出目录
    * @default './.picpress'
    */
-  output?: string
-
-  /**
-   * 是否覆盖原文件
-   * @default false
-   */
-  overwrite?: boolean
+  output?: string | 'original'
 
   /**
    * 自定义输出文件名
@@ -28,14 +33,8 @@ export interface PicpressOptions {
   filename?: (filename: string) => string
 
   /**
-   * 目标输出图片格式，默认为原图片格式
-   * @default undefined
-   */
-  targetFormat?: ImageFormat
-
-  /**
-   * 需要转换的源图片格式过滤器
-   * @default ['jpeg', 'jpg', 'png', 'webp', 'avif']
+   * 需要处理的图片格式，支持单个格式或格式数组
+   * @default defaultSourceFormats
    */
   sourceFormats?: ImageFormat[]
 
@@ -44,12 +43,6 @@ export interface PicpressOptions {
    * @default 1024
    */
   minFileSize?: number
-
-  /**
-   * 压缩质量（0-100）
-   * @default 80
-   */
-  quality?: number
 
   /**
    * 是否递归查找子文件夹中的图片
@@ -62,10 +55,36 @@ export interface PicpressOptions {
    * @default false
    */
   preserveMetadata?: boolean
+
+  /**
+   * 是否删除原文件，如果overwrite为true则忽略该选项
+   * @default false
+   */
+  deleteOriginal?: boolean
 }
 
+export interface CompressOptions {
+  /**
+   * 是否覆盖原文件，如果启用将忽略输出目录
+   * @default false
+   */
+  overwrite?: boolean
+
+  sharpCompressOptions?: SharpCompressOptions
+}
+
+export interface TransformOptions {
+  /**
+   * 目标输出图片格式，默认为原图片格式
+   * @default undefined
+   */
+  targetFormat?: ImageFormat
+}
+
+export type PicpressOptions = CommonOptions & TransformOptions & CompressOptions
+
 export interface compressAndConvertContext {
-  quality: number
+  compressOptions: SharpCompressOptions
   targetFormat: ImageFormat
   preserveMetadata: boolean
 }
