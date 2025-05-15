@@ -8,6 +8,11 @@ import cac from 'cac'
 import { name, version } from '../package.json'
 import { defaultSourceFormats, PicPress } from './picpress'
 
+const configFiles = [
+  'picpress.config.js',
+  'picpress.config.ts',
+  'picpress.config.json',
+] as const
 const cli = cac(cyanBright(name))
 
 cli.usage(`[options], or use ${greenBright('picpress.config.js/ts')} file`)
@@ -66,12 +71,6 @@ cli.command('transform', 'transform images format')
 cli.help()
 cli.version(blueBright(version))
 cli.parse()
-
-const configFiles = [
-  'picpress.config.js',
-  'picpress.config.ts',
-  'picpress.config.json',
-] as const
 
 async function readConfigFile(): Promise<PicpressOptions | undefined> {
   for (const configFile of configFiles) {
