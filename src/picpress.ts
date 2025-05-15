@@ -29,7 +29,7 @@ export const defaultSourceFormats: ImageFormat[] = [
   'v',
 ]
 
-export default class PicPress {
+export class PicPress {
   options: Required<PicpressOptions>
   paths: string[]
   constructor(options: PicpressOptions) {
@@ -199,4 +199,8 @@ export default class PicPress {
       })
     })
   }
+}
+
+export function defineConfig(config: PicpressOptions): PicpressOptions {
+  return config
 }
