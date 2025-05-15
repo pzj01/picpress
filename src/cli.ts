@@ -33,11 +33,12 @@ cli
   .option('--overwrite', 'whether to overwrite the original file', { default: false })
   .action(async (_options) => {
     const config = await readConfigFile()
-    const options = config || {
+    const options = {
       ..._options,
       sharpCompressOptions: {
         quality: _options.quality,
       },
+      ...config,
     }
 
     if (!options.entry) {
@@ -55,7 +56,10 @@ cli.command('transform', 'transform images format')
   .option('--target-format <format>', 'target image format', { default: 'webp' })
   .action(async (_options) => {
     const config = await readConfigFile()
-    const options = config || _options
+    const options = {
+      ..._options,
+      ...config,
+    }
 
     if (!options.entry) {
       console.log(redBright('Please specify the entry file or folder path'))
