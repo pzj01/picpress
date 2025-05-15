@@ -1,5 +1,5 @@
 {
-  "name": "picpress",
+  "name": "@pzj01/picpress",
   "type": "module",
   "version": "0.2.1",
   "packageManager": "pnpm@10.6.4",
