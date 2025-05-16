@@ -9,11 +9,6 @@ import { createJiti } from 'jiti'
 import { name, version } from '../package.json'
 import { defaultSourceFormats, PicPress } from './picpress'
 
-const configFiles = [
-  'picpress.config.js',
-  'picpress.config.ts',
-  'picpress.config.json',
-] as const
 const cli = cac(cyanBright(name))
 
 cli.usage(`[options], or use ${greenBright('picpress.config.js/ts')} file`)
@@ -49,7 +44,7 @@ cli
 
     const pic = new PicPress(options)
     await pic.compress()
-    console.log(greenBright('Compress completed 😈'))
+    console.log(greenBright('Compress completed 🎉'))
   })
 
 cli.command('transform', 'transform images format')
@@ -69,7 +64,7 @@ cli.command('transform', 'transform images format')
 
     const pic = new PicPress(options)
     await pic.transform()
-    console.log(greenBright('Format completed 😈'),
+    console.log(greenBright('Format completed 🎉'),
     )
   })
 
@@ -78,6 +73,12 @@ cli.version(blueBright(version))
 cli.parse()
 
 async function readConfigFile(): Promise<PicpressOptions | undefined> {
+  const configFiles = [
+    'picpress.config.js',
+    'picpress.config.ts',
+    'picpress.config.json',
+  ] as const
+
   for (const configFile of configFiles) {
     const path = join(process.cwd(), configFile)
     if (existsSync(path)) {
@@ -89,7 +90,7 @@ async function readConfigFile(): Promise<PicpressOptions | undefined> {
           fsCache: true,
           moduleCache: true,
         })
-        return await jiti.import(path)
+        return (await jiti.import<{ default?: PicpressOptions }>(path)).default
       }
 
       return (await import(path)).default

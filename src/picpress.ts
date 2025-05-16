@@ -1,6 +1,7 @@
 import type { OutputInfo, Sharp } from 'sharp'
 import type { CompressOptions, ImageFormat, PicpressOptions, TransformOptions } from './types'
-import { existsSync, mkdirSync, rm, statSync } from 'node:fs'
+import { existsSync, mkdirSync, renameSync, rm, statSync } from 'node:fs'
+import { platform } from 'node:os'
 import { basename, dirname, extname, join } from 'node:path'
 import { blueBright, greenBright, redBright } from 'ansis'
 import fg from 'fast-glob'
@@ -28,6 +29,8 @@ export const defaultSourceFormats: ImageFormat[] = [
   'ppm',
   'v',
 ]
+
+const unit = platform() === 'darwin' ? 1000 : 1024
 
 export class PicPress {
   options: Required<PicpressOptions>
@@ -90,7 +93,7 @@ export class PicPress {
     const path: string = args.length === 1 ? args[0] : ''
     const paths = path ? [path] : this.paths
 
-    const promises = paths.map((path) => {
+    const promises = paths.map(async (path) => {
       if (this.isSupported(path)) {
         let dir = output
         let fname = basename(path)
@@ -98,13 +101,13 @@ export class PicPress {
 
         if (overwrite) {
           dir = dirname(path)
+          fname = `${basename(fname, ext)}.temp${ext}`
         }
         else {
           fname = `${filename(basename(fname, ext), count)}${ext}`
         }
 
         const newPath = join(dir, fname)
-        this.log(path, newPath)
 
         const s = sharp(path)
         s.toFormat(ext.slice(1) as ImageFormat, sharpCompressOptions)
@@ -113,13 +116,17 @@ export class PicPress {
           s.withMetadata()
         }
         count++
-        return this.toFile(s, newPath)
+
+        const result = await this.toFile(s, newPath)
+        this.log(path, newPath, result)
+        overwrite && renameSync(newPath, path)
+        return result
       }
     })
 
     const results = await Promise.all(promises)
 
-    console.log(`✅ All images processed ${greenBright('successfully')}. ${count} images processed.`)
+    console.log(`✅ All images processed ${greenBright('successfully')}. ${--count} images processed.`)
 
     return results.filter(Boolean) as OutputInfo[]
   }
@@ -139,7 +146,7 @@ export class PicPress {
     let count = 1
     const path: string = args.length === 1 ? args[0] : ''
     const paths = path ? [path] : this.paths
-    const promises = paths.map((path) => {
+    const promises = paths.map(async (path) => {
       if (this.isSupported(path)) {
         let dir = output
         let fname = basename(path)
@@ -160,26 +167,38 @@ export class PicPress {
         const s = sharp(path)
         s.toFormat(format)
         count++
-        return this.toFile(s, newPath)
+        const result = await this.toFile(s, newPath)
+        this.log(path, newPath, result)
+        return result
       }
     })
 
     const results = await Promise.all(promises)
 
-    console.log(`✅ All images processed ${greenBright('successfully')}. ${count} images processed.`)
+    console.log(`✅ All images processed ${greenBright('successfully')}. ${--count} images processed.`)
 
     return results.filter(Boolean) as OutputInfo[]
   }
 
-  protected log(path: string, newPath: string): void {
-    if (this.options.overwrite)
-      return
-    console.log(`🌁 Processing ${blueBright(path)} → ${greenBright(newPath)}`)
+  protected log(path: string, newPath: string, outputInfo?: OutputInfo): void {
+    const stats1 = statSync(path)
+
+    const stats2 = outputInfo || statSync(newPath)
+    const size = stats1.size / unit ** 2
+    const newSize = stats2.size / unit ** 2
+    const diff = (size - newSize)
+    const ratio = ((diff / size) * 100)
+
+    if (!this.options.overwrite)
+      console.log(`🌁 Processing ${blueBright(path)} → ${greenBright(newPath)}`)
+    else
+      console.log(`🌁 Processing ${blueBright(path)}`)
+    console.log(`🪬 ${redBright`${size.toFixed(2)}MB`} → ${blueBright`${newSize.toFixed(2)}MB`} 😈, reduce ${greenBright`${diff.toFixed(2)}MB`}, compress ${greenBright`${ratio.toFixed(2)}%`} 🚀`)
   }
 
   protected isSupported(path: string): boolean {
     const { size } = statSync(path)
-    return (size / 1024) >= this.options.minFileSize
+    return (size / unit) >= this.options.minFileSize
   }
 
   protected toFile(sharp: Sharp, path: string): Promise<OutputInfo> {
