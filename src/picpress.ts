@@ -144,7 +144,7 @@ export class PicPress {
     } as Required<PicpressOptions>
 
     let count = 1
-    const path: string = args.length === 1 ? args[0] : ''
+    const path: string = args.length === 1 ? '' : args[0]
     const paths = path ? [path] : this.paths
     const promises = paths.map(async (path) => {
       if (this.isSupported(path)) {
@@ -163,7 +163,6 @@ export class PicPress {
           fname = `${filename(basename(fname, originalExt), count)}.${format}`
         }
         const newPath = join(dir, fname)
-        this.log(path, newPath)
         const s = sharp(path)
         s.toFormat(format)
         count++
